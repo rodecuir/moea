@@ -1,4 +1,7 @@
 from kung import kung_max, kung_min
+from nsgaii import random_population, crossover, mutation, local_search, evaluation, crowding_calculation, remove_using_crowding, pareto_front_finding, selection
+from pymoo.problems.multi import ZDT1, ZDT2, ZDT3, ZDT4, ZDT5, ZDT6
+from pymoo.problems import get_problem
 import matplotlib.pyplot as plt
 import numpy as np
             
@@ -6,7 +9,7 @@ if __name__ == "__main__":
     while True:
         print("\n--- Menú Principal ---")
         print("1. Probar el algoritmo de Kung para calcular el conjunto de soluciones no dominadas")
-        print("2. Probar el algoritmo NSGAII sobre el conjunto WFG")
+        print("2. Probar el algoritmo NSGAII")
         print("3. Salir")
 
         opcion = input("Ingrese la opción deseada: ")
@@ -46,8 +49,170 @@ if __name__ == "__main__":
             plt.show()
                 
         elif opcion == "2":
-            print("hola mundo")
-            
+            while True:
+                print("\n--- Conjuntos de pruebas ---")
+                print("1. ZDT")
+                print("2. DTLZ")
+                print("3. Regresar al menú principal")
+                
+                opcion = input("Ingrese la opción deseada: ")
+
+                if opcion == "1":
+                    while True:                    
+                        print("\n--- Problemas del conjunto ZDT ---")
+                        print("1. ZDT1")
+                        print("2. ZDT2")
+                        print("3. ZDT3")
+                        print("4. ZDT4")
+                        print("5. ZDT5")
+                        print("6. ZDT6")
+
+                        opcion = input("Ingrese la opción deseada: ")
+
+                        if opcion == "1":
+                            problem = get_problem("zdt1")
+                        elif opcion == "2":
+                            problem = ZDT2()
+                        elif opcion == "3":
+                            problem = ZDT3()
+                        elif opcion == "4":
+                            problem = ZDT4()
+                        elif opcion == "5":
+                            problem = ZDT5()
+                        elif opcion == "6":
+                            problem = ZDT6()
+                        else:
+                            print("Opción inválida.")
+                            continue
+                            
+                        # Parámetros
+                        nv = problem.n_var
+                        lb = problem.xl
+                        ub = problem.xu
+                        pop_size = 100
+                        rate_crossover = 30
+                        rate_mutation = 20
+                        rate_local_search = 30
+                        step_size = 0.1
+                        pop = random_population(nv,pop_size,lb,ub)
+
+                        for i in range(150):
+                            offspring_from_crossover = crossover(pop,rate_crossover)
+                            offspring_from_mutation = mutation(pop,rate_mutation)
+                            offspring_from_local_search = local_search(pop, rate_local_search, step_size, problem)
+                            combined = np.vstack((pop, offspring_from_crossover, offspring_from_mutation, offspring_from_local_search))
+                            combined_fitness = evaluation(combined, problem)
+                            pop, _ = selection(combined, combined_fitness, pop_size)
+                    
+                        fitness_values     = evaluation(pop, problem)
+                        pareto_mask        = pareto_front_finding(fitness_values, np.arange(pop.shape[0]))
+                        pop_optimal        = pop[pareto_mask, :]
+                        fitness_optimal    = fitness_values[pareto_mask]
+
+                        print("_________________")
+                        print("Optimal solutions:")
+                        print("  " + "    ".join([f"x{i+1}" for i in range(nv)]))
+                        for sol in pop_optimal:
+                            print(sol)
+                        print("______________")
+                        print("Fitness values:")
+                        print("objective 1  objective 2")
+                        print(fitness_optimal)
+
+                        plt.scatter(fitness_optimal[:, 0], fitness_optimal[:, 1])
+                        plt.xlabel('Objective 1')
+                        plt.ylabel('Objective 2')
+                        plt.show()
+                    
+                        break
+                        
+                elif opcion == "2":
+                    while True:                    
+                        print("\n--- Problemas del conjunto DTLZ ---")
+                        print("1. DTLZ1")
+                        print("2. DTLZ2")
+                        print("3. DTLZ3")
+                        print("4. DTLZ4")
+                        print("5. DTLZ5")
+                        print("6. DTLZ6")
+                        print("7. DTLZ7")
+
+                        opcion = input("Ingrese la opción deseada: ")
+                
+                        if opcion == "1":
+                            problem = get_problem("dtlz1", n_var=7, n_obj=3)
+                        elif opcion == "2":
+                            problem = get_problem("dtlz2", n_var=12, n_obj=3)
+                        elif opcion == "3":
+                            problem = get_problem("dtlz3", n_var=12, n_obj=3)
+                        elif opcion == "4":
+                            problem = get_problem("dtlz4", n_var=12, n_obj=3)
+                        elif opcion == "5":
+                            problem = get_problem("dtlz5", n_var=12, n_obj=3)
+                        elif opcion == "6":
+                            problem = get_problem("dtlz6", n_var=12, n_obj=3)
+                        elif opcion == "7":
+                            problem = get_problem("dtlz7", n_var=22, n_obj=3)
+                        else:
+                            print("Opción inválida.")
+                            continue                                
+
+                        nv = problem.n_var
+                        lb = problem.xl
+                        ub = problem.xu
+                        pop_size = 100
+                        rate_crossover = 30
+                        rate_mutation = 20
+                        rate_local_search = 30
+                        step_size = 0.1
+                        pop = random_population(nv, pop_size, lb, ub)
+
+                        for i in range(150):
+                            offspring_from_crossover = crossover(pop, rate_crossover)
+                            offspring_from_mutation = mutation(pop, rate_mutation)
+                            offspring_from_local_search = local_search(pop, rate_local_search, step_size, problem)
+                            combined = np.vstack((pop, offspring_from_crossover, offspring_from_mutation, offspring_from_local_search))
+                            combined_fitness = evaluation(combined, problem)
+                            pop, _ = selection(combined, combined_fitness, pop_size)
+
+                        fitness_values = evaluation(pop, problem)
+                        pareto_mask = pareto_front_finding(fitness_values, np.arange(pop.shape[0]))
+                        pop_optimal = pop[pareto_mask, :]
+                        fitness_optimal = fitness_values[pareto_mask]
+
+                        print("_________________")
+                        print("Optimal solutions:")
+                        print("  " + "    ".join([f"x{i+1}" for i in range(nv)]))
+                        for sol in pop_optimal:
+                            print(sol)
+                        print("______________")
+                        print("Fitness values:")
+                        print("  " + "    ".join([f"objective {i+1}" for i in range(problem.n_obj)]))
+                        print(fitness_optimal)
+
+                        # Gráfica: sólo funciona bien si son 2 o 3 objetivos
+                        if problem.n_obj == 2:
+                            plt.scatter(fitness_optimal[:, 0], fitness_optimal[:, 1])
+                            plt.xlabel('Objective 1')
+                            plt.ylabel('Objective 2')
+                            plt.show()
+                        elif problem.n_obj == 3:
+                            from mpl_toolkits.mplot3d import Axes3D
+                            fig = plt.figure()
+                            ax = fig.add_subplot(111, projection='3d')
+                            ax.scatter(fitness_optimal[:, 0], fitness_optimal[:, 1], fitness_optimal[:, 2])
+                            ax.set_xlabel('Objective 1')
+                            ax.set_ylabel('Objective 2')
+                            ax.set_zlabel('Objective 3')
+                            plt.show()
+                            
+                        break
+                elif opcion == "3":
+                    print("Regresando el menú principal ...")
+                    break        
+                else:
+                    print("No se reconoció la opción, ingresa una opción válida.")            
+                        
         elif opcion == "3":
             print("Saliendo del programa ...")
             break
