@@ -2,7 +2,7 @@
 Algoritmo evolutivo para optimización multiobjetivo aplicado sobre los
 conjuntos de prueba ZDT, DTLZ y WFG
 
-## Abstract
+## Descripción
 
 Este   repositorio   contiene   una   implementación   del   algoritmo
 NSGAII[<sup>1</sup>](#fn1) con pruebas sobre los problemas ZDT, DTLZ y
