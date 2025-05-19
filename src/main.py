@@ -1,6 +1,7 @@
 from kung import kung_max, kung_min
 from nsgaii import random_population, crossover, mutation, local_search, evaluation, crowding_calculation, remove_using_crowding, pareto_front_finding, selection
 from pymoo.problems import get_problem
+from mpl_toolkits.mplot3d import Axes3D
 import matplotlib.pyplot as plt
 import numpy as np
             
@@ -197,7 +198,6 @@ if __name__ == "__main__":
                             plt.ylabel('Objective 2')
                             plt.show()
                         elif problem.n_obj == 3:
-                            from mpl_toolkits.mplot3d import Axes3D
                             fig = plt.figure()
                             ax = fig.add_subplot(111, projection='3d')
                             ax.scatter(fitness_optimal[:, 0], fitness_optimal[:, 1], fitness_optimal[:, 2])
@@ -284,7 +284,6 @@ if __name__ == "__main__":
                             plt.ylabel('Objective 2')
                             plt.show()
                         elif problem.n_obj == 3:
-                            from mpl_toolkits.mplot3d import Axes3D
                             fig = plt.figure()
                             ax = fig.add_subplot(111, projection='3d')
                             ax.scatter(fitness_optimal[:, 0], fitness_optimal[:, 1], fitness_optimal[:, 2])
