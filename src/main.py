@@ -1,6 +1,5 @@
 from kung import kung_max, kung_min
 from nsgaii import random_population, crossover, mutation, local_search, evaluation, crowding_calculation, remove_using_crowding, pareto_front_finding, selection
-from pymoo.problems.multi import ZDT1, ZDT2, ZDT3, ZDT4, ZDT5, ZDT6
 from pymoo.problems import get_problem
 import matplotlib.pyplot as plt
 import numpy as np
@@ -53,7 +52,8 @@ if __name__ == "__main__":
                 print("\n--- Conjuntos de pruebas ---")
                 print("1. ZDT")
                 print("2. DTLZ")
-                print("3. Regresar al menú principal")
+                print("3. WFG")
+                print("4. Regresar al menú principal")
                 
                 opcion = input("Ingrese la opción deseada: ")
 
@@ -72,15 +72,15 @@ if __name__ == "__main__":
                         if opcion == "1":
                             problem = get_problem("zdt1")
                         elif opcion == "2":
-                            problem = ZDT2()
+                            problem = get_problem("zdt2")
                         elif opcion == "3":
-                            problem = ZDT3()
+                            problem = get_problem("zdt3")
                         elif opcion == "4":
-                            problem = ZDT4()
+                            problem = get_problem("zdt4")
                         elif opcion == "5":
-                            problem = ZDT5()
+                            problem = get_problem("zdt5")
                         elif opcion == "6":
-                            problem = ZDT6()
+                            problem = get_problem("zdt6")
                         else:
                             print("Opción inválida.")
                             continue
@@ -207,7 +207,97 @@ if __name__ == "__main__":
                             plt.show()
                             
                         break
+
                 elif opcion == "3":
+                    while True:
+                        print("\n--- Problemas del conjunto WFG ---")
+                        print("1. WFG1")
+                        print("2. WFG2")
+                        print("3. WFG3")
+                        print("4. WFG4")
+                        print("5. WFG5")
+                        print("6. WFG6")
+                        print("7. WFG7")
+                        print("8. WFG8")
+                        print("9. WFG9")
+
+                        opcion = input("Ingrese la opción deseada: ")
+
+                        if opcion == "1":
+                            problem = get_problem("wfg1", n_var=10, n_obj=3)
+                        elif opcion == "2":
+                            problem = get_problem("wfg2", n_var=24, n_obj=3)
+                        elif opcion == "3":
+                            problem = get_problem("wfg3", n_var=24, n_obj=3)
+                        elif opcion == "4":
+                            problem = get_problem("wfg4", n_var=24, n_obj=3)
+                        elif opcion == "5":
+                            problem = get_problem("wfg5", n_var=24, n_obj=3)
+                        elif opcion == "6":
+                            problem = get_problem("wfg6", n_var=24, n_obj=3)
+                        elif opcion == "7":
+                            problem = get_problem("wfg7", n_var=24, n_obj=3)
+                        elif opcion == "8":
+                            problem = get_problem("wfg8", n_var=24, n_obj=3)
+                        elif opcion == "9":
+                            problem = get_problem("wfg9", n_var=24, n_obj=3)
+                        else:
+                            print("Opción inválida.")
+                            continue                                
+                
+                        nv = problem.n_var
+                        lb = problem.xl
+                        ub = problem.xu
+                        pop_size = 100
+                        rate_crossover = 30
+                        rate_mutation = 20
+                        rate_local_search = 30
+                        step_size = 0.1
+                        pop = random_population(nv, pop_size, lb, ub)
+
+                        for i in range(150):
+                            offspring_from_crossover = crossover(pop, rate_crossover)
+                            offspring_from_mutation = mutation(pop, rate_mutation)
+                            offspring_from_local_search = local_search(pop, rate_local_search, step_size, problem)
+                            combined = np.vstack((pop, offspring_from_crossover, offspring_from_mutation, offspring_from_local_search))
+                            combined_fitness = evaluation(combined, problem)
+                            pop, _ = selection(combined, combined_fitness, pop_size)
+
+                        fitness_values = evaluation(pop, problem)
+                        pareto_mask = pareto_front_finding(fitness_values, np.arange(pop.shape[0]))
+                        pop_optimal = pop[pareto_mask, :]
+                        fitness_optimal = fitness_values[pareto_mask]
+
+                        print("_________________")
+                        print("Optimal solutions:")
+                        print("  " + "    ".join([f"x{i+1}" for i in range(nv)]))
+                        for sol in pop_optimal:
+                            print(sol)
+                        print("______________")
+                        print("Fitness values:")
+                        print("  " + "    ".join([f"objective {i+1}" for i in range(problem.n_obj)]))
+                        print(fitness_optimal)
+
+                        if problem.n_obj == 2:
+                            plt.scatter(fitness_optimal[:, 0], fitness_optimal[:, 1])
+                            plt.xlabel('Objective 1')
+                            plt.ylabel('Objective 2')
+                            plt.show()
+                        elif problem.n_obj == 3:
+                            from mpl_toolkits.mplot3d import Axes3D
+                            fig = plt.figure()
+                            ax = fig.add_subplot(111, projection='3d')
+                            ax.scatter(fitness_optimal[:, 0], fitness_optimal[:, 1], fitness_optimal[:, 2])
+                            ax.set_xlabel('Objective 1')
+                            ax.set_ylabel('Objective 2')
+                            ax.set_zlabel('Objective 3')
+                            plt.show()
+                            
+                            break
+                        else:
+                            print("Opción inválida.")
+                    
+                elif opcion == "4":
                     print("Regresando el menú principal ...")
                     break        
                 else:
